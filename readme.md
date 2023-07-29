@@ -1,0 +1,1 @@
+At the moment this is just an idea for unifying the logging
