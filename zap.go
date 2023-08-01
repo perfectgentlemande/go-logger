@@ -45,31 +45,34 @@ func extractOutput(value string) *os.File {
 func defaultZap() *zap.Logger {
 	return zap.New(
 		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()), os.Stdout, zap.ErrorLevel))
+			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), os.Stdout, zap.ErrorLevel))
 }
 
 func newZap(config *Config) Logger {
 	log := zap.New(
 		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()), extractOutput(config.Output), levelZap[config.Level]))
+			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), extractOutput(config.Output), levelZap[config.Level]))
 
 	return &zapWrapper{
 		log: log,
 	}
 }
 
-func (zw *zapWrapper) Debug(msg string) {
-	zw.log.Debug(msg)
+func (zw *zapWrapper) Panic(msg string) {
+	zw.log.Panic(msg)
 }
-func (zw *zapWrapper) Info(msg string) {
-	zw.log.Info(msg)
-}
-func (zw *zapWrapper) Warning(msg string) {
-	zw.log.Warn(msg)
+func (zw *zapWrapper) Fatal(msg string) {
+	zw.log.Fatal(msg)
 }
 func (zw *zapWrapper) Error(msg string) {
 	zw.log.Error(msg)
 }
-func (zw *zapWrapper) Fatal(msg string) {
-	zw.log.Fatal(msg)
+func (zw *zapWrapper) Warning(msg string) {
+	zw.log.Warn(msg)
+}
+func (zw *zapWrapper) Info(msg string) {
+	zw.log.Info(msg)
+}
+func (zw *zapWrapper) Debug(msg string) {
+	zw.log.Debug(msg)
 }
