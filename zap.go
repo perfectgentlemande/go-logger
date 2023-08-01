@@ -76,3 +76,40 @@ func (zw *zapWrapper) Info(msg string) {
 func (zw *zapWrapper) Debug(msg string) {
 	zw.log.Debug(msg)
 }
+func (zw *zapWrapper) WithField(key string, value interface{}) Logger {
+	field := zapcore.Field{
+		Key:       key,
+		Type:      zapcore.ReflectType,
+		Interface: value,
+	}
+
+	return &zapWrapper{
+		log: zw.log.With(field),
+	}
+}
+func (zw *zapWrapper) WithFields(fields Fields) Logger {
+	res := make([]zapcore.Field, 0, len(fields))
+
+	for key := range fields {
+		res = append(res, zapcore.Field{
+			Key:       key,
+			Type:      zapcore.ReflectType,
+			Interface: fields[key],
+		})
+	}
+
+	return &zapWrapper{
+		log: zw.log.With(res...),
+	}
+}
+func (zw *zapWrapper) WithError(err error) Logger {
+	field := zapcore.Field{
+		Key:       fieldError,
+		Type:      zapcore.ErrorType,
+		Interface: err,
+	}
+
+	return &zapWrapper{
+		log: zw.log.With(field),
+	}
+}

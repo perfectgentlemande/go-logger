@@ -6,11 +6,19 @@ type Logger interface {
 	Warning(msg string)
 	Error(msg string)
 	Fatal(msg string)
+	WithField(key string, value interface{}) Logger
+	WithFields(fields Fields) Logger
+	WithError(err error) Logger
 }
+
+// Fields is a log fields type
+type Fields map[string]interface{}
 
 type LoggerName string
 
 const (
+	fieldError = "error"
+
 	OutputStdOut = "stdout"
 	OutputStdErr = "stderr"
 
