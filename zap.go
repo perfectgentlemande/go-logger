@@ -49,9 +49,20 @@ func defaultZap() *zap.Logger {
 }
 
 func newZap(config *Config) Logger {
+	var encoder zapcore.Encoder
+
+	switch config.Formatter {
+	case FormatterJSON:
+		encoder = zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+	case FormatterText:
+		encoder = zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
+	default:
+		encoder = zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
+		defaultZap().Error("wrong formatter, text selected")
+	}
+
 	log := zap.New(
-		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), extractOutput(config.Output), levelZap[config.Level]))
+		zapcore.NewCore(encoder, extractOutput(config.Output), levelZap[config.Level]))
 
 	return &zapWrapper{
 		log: log,
