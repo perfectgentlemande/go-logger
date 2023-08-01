@@ -30,7 +30,7 @@ var levelNumber = map[string]Level{
 func (level *Level) UnmarshalJSON(value []byte) error {
 	v, ok := levelNumber[string(value)]
 	if !ok {
-		return fmt.Errorf("wrong value of level: %s")
+		return fmt.Errorf("wrong value of level: %s", string(value))
 	}
 
 	level = &v

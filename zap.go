@@ -20,10 +20,38 @@ var levelZap = map[Level]zapcore.Level{
 	DebugLevel: zapcore.DebugLevel,
 }
 
+func extractOutput(value string) *os.File {
+	switch value {
+	case OutputStdOut, "":
+		return os.Stdout
+	case OutputStdErr:
+		return os.Stderr
+	default:
+		var err error
+		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+		if err != nil {
+			defaultZap().Error("cant create log file, falling to stdout", zap.Field{
+				Key:       "error",
+				Type:      zapcore.ErrorType,
+				Interface: err,
+			})
+			return os.Stdout
+		} else {
+			return fl
+		}
+	}
+}
+
+func defaultZap() *zap.Logger {
+	return zap.New(
+		zapcore.NewCore(
+			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()), os.Stdout, zap.ErrorLevel))
+}
+
 func newZap(config *Config) Logger {
 	log := zap.New(
 		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()), os.Stdout, levelZap[config.Level]))
+			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()), extractOutput(config.Output), levelZap[config.Level]))
 
 	return &zapWrapper{
 		log: log,
