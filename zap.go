@@ -20,7 +20,7 @@ var levelZap = map[Level]zapcore.Level{
 	DebugLevel: zapcore.DebugLevel,
 }
 
-func extractOutput(value string) *os.File {
+func extractZapOutput(value string) *os.File {
 	switch value {
 	case OutputStdOut, "":
 		return os.Stdout
@@ -62,7 +62,7 @@ func newZap(config *Config) Logger {
 	}
 
 	log := zap.New(
-		zapcore.NewCore(encoder, extractOutput(config.Output), levelZap[config.Level]))
+		zapcore.NewCore(encoder, extractZapOutput(config.Output), levelZap[config.Level]))
 
 	return &zapWrapper{
 		log: log,
