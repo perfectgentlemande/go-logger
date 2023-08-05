@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -30,12 +31,12 @@ var levelNumber = map[string]Level{
 }
 
 func (level *Level) UnmarshalJSON(value []byte) error {
-	v, ok := levelNumber[string(value)]
+	v, ok := levelNumber[strings.Replace(string(value), `"`, "", -1)]
 	if !ok {
 		return fmt.Errorf("wrong value of level: %s", string(value))
 	}
 
-	level = &v
+	*level = v
 	return nil
 }
 
