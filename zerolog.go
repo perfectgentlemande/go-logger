@@ -8,7 +8,8 @@ import (
 )
 
 type zerologWrapper struct {
-	log *zerolog.Logger
+	log    *zerolog.Logger
+	fields Fields
 }
 
 func extractZerologOutput(value string) io.Writer {
@@ -61,12 +62,37 @@ func (zw *zerologWrapper) Info(msg string) {
 func (zw *zerologWrapper) Debug(msg string) {
 	zw.log.Debug().Msg(msg)
 }
-func (zw *zerologWrapper) WithField(key string, value interface{}) Logger {
 
+func copyFields(fields Fields) Fields {
+	res := make(Fields, len(fields))
+
+	for k := range fields {
+		res[k] = fields[k]
+	}
+
+	return res
+}
+func (zw *zerologWrapper) WithField(key string, value interface{}) Logger {
+	newFields := copyFields(zw.fields)
+	newFields[key] = value
+
+	return &zerologWrapper{
+		log:    zw.log,
+		fields: newFields,
+	}
 }
 func (zw *zerologWrapper) WithFields(fields Fields) Logger {
+	newFields := copyFields(zw.fields)
 
+	for k := range fields {
+		newFields[k] = fields[k]
+	}
+
+	return &zerologWrapper{
+		log:    zw.log,
+		fields: newFields,
+	}
 }
 func (zw *zerologWrapper) WithError(err error) Logger {
-
+	return zw.WithField(fieldError, err)
 }
