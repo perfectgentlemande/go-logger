@@ -46,6 +46,6 @@ func (level *Level) UnmarshalYAML(value *yaml.Node) error {
 		return fmt.Errorf("wrong value of level: %s", value.Value)
 	}
 
-	level = &v
+	*level = v
 	return nil
 }
