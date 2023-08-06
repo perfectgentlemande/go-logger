@@ -19,9 +19,6 @@ type LoggerName string
 const (
 	fieldError = "error"
 
-	FormatterJSON = "json"
-	FormatterText = "text"
-
 	OutputStdOut = "stdout"
 	OutputStdErr = "stderr"
 
