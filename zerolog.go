@@ -37,7 +37,12 @@ func defaultZerolog() *zerolog.Logger {
 }
 
 func newZerolog(config *Config) Logger {
-	log := zerolog.New(extractZerologOutput(config.Output))
+	output := extractZerologOutput(config.Output)
+	log := zerolog.New(output)
+
+	if config.Formatter != FormatterJSON {
+		log = zerolog.New(zerolog.ConsoleWriter{Out: output})
+	}
 
 	return &zerologWrapper{
 		log: &log,

@@ -1,15 +1,47 @@
 package logger
 
 import (
+	"os"
+
 	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type logrusWrapper struct {
 	log *logrus.Entry
 }
 
+func extractLogrusOutput(value string) *os.File {
+	switch value {
+	case OutputStdOut, "":
+		return os.Stdout
+	case OutputStdErr:
+		return os.Stderr
+	default:
+		var err error
+		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+		if err != nil {
+			defaultZap().Error("cant create log file, falling to stdout", zap.Field{
+				Key:       "error",
+				Type:      zapcore.ErrorType,
+				Interface: err,
+			})
+			return os.Stdout
+		} else {
+			return fl
+		}
+	}
+}
+
 func newLogrus(config *Config) Logger {
-	return &logrusWrapper{}
+	log := logrus.New()
+	log.SetOutput(os.Stdout)
+	log.SetFormatter(&logrus.JSONFormatter{})
+
+	return &logrusWrapper{
+		log: logrus.NewEntry(log),
+	}
 }
 
 func (lw *logrusWrapper) Panic(msg string) {

@@ -45,20 +45,16 @@ func extractZapOutput(value string) *os.File {
 func defaultZap() *zap.Logger {
 	return zap.New(
 		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()), os.Stdout, zap.ErrorLevel))
+			zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig()), os.Stdout, zap.DebugLevel))
 }
 
 func newZap(config *Config) Logger {
 	var encoder zapcore.Encoder
 
-	switch config.Formatter {
-	case FormatterJSON:
+	if config.Formatter == FormatterJSON {
 		encoder = zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-	case FormatterText:
+	} else {
 		encoder = zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
-	default:
-		encoder = zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
-		defaultZap().Error("wrong formatter, text selected")
 	}
 
 	log := zap.New(
