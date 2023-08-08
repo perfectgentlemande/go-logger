@@ -12,6 +12,15 @@ type logrusWrapper struct {
 	log *logrus.Entry
 }
 
+var levelLogrus = map[Level]logrus.Level{
+	PanicLevel: logrus.PanicLevel,
+	FatalLevel: logrus.FatalLevel,
+	ErrorLevel: logrus.ErrorLevel,
+	WarnLevel:  logrus.WarnLevel,
+	InfoLevel:  logrus.InfoLevel,
+	DebugLevel: logrus.DebugLevel,
+}
+
 func extractLogrusOutput(value string) *os.File {
 	switch value {
 	case OutputStdOut, "":
@@ -36,8 +45,14 @@ func extractLogrusOutput(value string) *os.File {
 
 func newLogrus(config *Config) Logger {
 	log := logrus.New()
-	log.SetOutput(os.Stdout)
-	log.SetFormatter(&logrus.JSONFormatter{})
+	log.SetOutput(extractLogrusOutput(config.Output))
+
+	if config.Formatter == FormatterJSON {
+		log.SetFormatter(&logrus.JSONFormatter{})
+	} else {
+		log.SetFormatter(&logrus.TextFormatter{})
+	}
+	log.SetLevel(levelLogrus[config.Level])
 
 	return &logrusWrapper{
 		log: logrus.NewEntry(log),
