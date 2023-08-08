@@ -12,6 +12,15 @@ type zerologWrapper struct {
 	fields Fields
 }
 
+var levelZerolog = map[Level]zerolog.Level{
+	PanicLevel: zerolog.PanicLevel,
+	FatalLevel: zerolog.FatalLevel,
+	ErrorLevel: zerolog.ErrorLevel,
+	WarnLevel:  zerolog.WarnLevel,
+	InfoLevel:  zerolog.InfoLevel,
+	DebugLevel: zerolog.DebugLevel,
+}
+
 func extractZerologOutput(value string) io.Writer {
 	switch value {
 	case OutputStdOut, "":
@@ -43,6 +52,7 @@ func newZerolog(config *Config) Logger {
 	if config.Formatter != FormatterJSON {
 		log = zerolog.New(zerolog.ConsoleWriter{Out: output})
 	}
+	log = log.Level(levelZerolog[config.Level])
 
 	return &zerologWrapper{
 		log: &log,
