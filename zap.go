@@ -38,7 +38,7 @@ func extractZapOutput(value string) *os.File {
 	}
 }
 
-func defaultZap() Logger {
+func DefaultZap() Logger {
 	return &zapWrapper{
 		log: zap.New(
 			zapcore.NewCore(
@@ -46,7 +46,7 @@ func defaultZap() Logger {
 	}
 }
 
-func newZap(config *Config) Logger {
+func NewZap(config *Config) Logger {
 	var encoder zapcore.Encoder
 
 	if config.Formatter == FormatterJSON {

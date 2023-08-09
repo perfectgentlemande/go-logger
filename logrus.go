@@ -19,7 +19,7 @@ var levelLogrus = map[Level]logrus.Level{
 	DebugLevel: logrus.DebugLevel,
 }
 
-func defaultLogrus() Logger {
+func DefaultLogrus() Logger {
 	log := logrus.New()
 	log.SetOutput(os.Stdout)
 	log.SetFormatter(&logrus.TextFormatter{})
@@ -48,7 +48,7 @@ func extractLogrusOutput(value string) *os.File {
 	}
 }
 
-func newLogrus(config *Config) Logger {
+func NewLogrus(config *Config) Logger {
 	log := logrus.New()
 	log.SetOutput(extractLogrusOutput(config.Output))
 

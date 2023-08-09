@@ -39,7 +39,7 @@ func extractZerologOutput(value string) io.Writer {
 	}
 }
 
-func defaultZerolog() Logger {
+func DefaultZerolog() Logger {
 	log := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).Level(zerolog.DebugLevel)
 
 	return &zerologWrapper{
@@ -47,7 +47,7 @@ func defaultZerolog() Logger {
 	}
 }
 
-func newZerolog(config *Config) Logger {
+func NewZerolog(config *Config) Logger {
 	output := extractZerologOutput(config.Output)
 	log := zerolog.New(output)
 
