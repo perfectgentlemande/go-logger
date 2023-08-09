@@ -50,6 +50,7 @@ func NewZap(config *Config) Logger {
 	var encoder zapcore.Encoder
 	encoderConf := zap.NewProductionEncoderConfig()
 	encoderConf.TimeKey = fieldTime
+	encoderConf.EncodeTime = zapcore.RFC3339TimeEncoder
 
 	if config.Formatter == FormatterJSON {
 		encoder = zapcore.NewJSONEncoder(encoderConf)
