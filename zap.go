@@ -30,11 +30,7 @@ func extractZapOutput(value string) *os.File {
 		var err error
 		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			defaultZap().Error("cant create log file, falling to stdout", zap.Field{
-				Key:       "error",
-				Type:      zapcore.ErrorType,
-				Interface: err,
-			})
+			defaultZap().WithError(err).Error("cant create log file, falling to stdout")
 			return os.Stdout
 		} else {
 			return fl
@@ -42,10 +38,12 @@ func extractZapOutput(value string) *os.File {
 	}
 }
 
-func defaultZap() *zap.Logger {
-	return zap.New(
-		zapcore.NewCore(
-			zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig()), os.Stdout, zap.DebugLevel))
+func defaultZap() Logger {
+	return &zapWrapper{
+		log: zap.New(
+			zapcore.NewCore(
+				zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig()), os.Stdout, zap.DebugLevel)),
+	}
 }
 
 func newZap(config *Config) Logger {

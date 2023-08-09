@@ -31,7 +31,7 @@ func extractZerologOutput(value string) io.Writer {
 		var err error
 		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			defaultZerolog().Error().Err(err).Msg("can't create log file, falling to stdout")
+			defaultZerolog().WithError(err).Error("can't create log file, falling to stdout")
 			return os.Stdout
 		} else {
 			return fl
@@ -39,10 +39,12 @@ func extractZerologOutput(value string) io.Writer {
 	}
 }
 
-func defaultZerolog() *zerolog.Logger {
-	log := zerolog.New(os.Stdout)
+func defaultZerolog() Logger {
+	log := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout}).Level(zerolog.DebugLevel)
 
-	return &log
+	return &zerologWrapper{
+		log: &log,
+	}
 }
 
 func newZerolog(config *Config) Logger {

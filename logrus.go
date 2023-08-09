@@ -4,8 +4,6 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 type logrusWrapper struct {
@@ -21,6 +19,17 @@ var levelLogrus = map[Level]logrus.Level{
 	DebugLevel: logrus.DebugLevel,
 }
 
+func defaultLogrus() Logger {
+	log := logrus.New()
+	log.SetOutput(os.Stdout)
+	log.SetFormatter(&logrus.TextFormatter{})
+	log.SetLevel(logrus.DebugLevel)
+
+	return &logrusWrapper{
+		log: logrus.NewEntry(log),
+	}
+}
+
 func extractLogrusOutput(value string) *os.File {
 	switch value {
 	case OutputStdOut, "":
@@ -31,11 +40,7 @@ func extractLogrusOutput(value string) *os.File {
 		var err error
 		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			defaultZap().Error("cant create log file, falling to stdout", zap.Field{
-				Key:       "error",
-				Type:      zapcore.ErrorType,
-				Interface: err,
-			})
+			defaultLogrus().WithError(err).Error("cant create log file, falling to stdout")
 			return os.Stdout
 		} else {
 			return fl
