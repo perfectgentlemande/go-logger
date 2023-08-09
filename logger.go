@@ -18,6 +18,7 @@ type LoggerName string
 
 const (
 	fieldError = "error"
+	fieldTime  = "time"
 
 	OutputStdOut = "stdout"
 	OutputStdErr = "stderr"

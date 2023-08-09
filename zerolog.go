@@ -3,6 +3,7 @@ package logger
 import (
 	"io"
 	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -62,22 +63,22 @@ func NewZerolog(config *Config) Logger {
 }
 
 func (zw *zerologWrapper) Panic(msg string) {
-	zw.log.Panic().Fields(zw.fields).Msg(msg)
+	zw.log.Panic().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Fatal(msg string) {
-	zw.log.Fatal().Fields(zw.fields).Msg(msg)
+	zw.log.Fatal().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Error(msg string) {
-	zw.log.Error().Fields(zw.fields).Msg(msg)
+	zw.log.Error().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Warning(msg string) {
-	zw.log.Warn().Fields(zw.fields).Msg(msg)
+	zw.log.Warn().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Info(msg string) {
-	zw.log.Info().Fields(zw.fields).Msg(msg)
+	zw.log.Info().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Debug(msg string) {
-	zw.log.Debug().Fields(zw.fields).Msg(msg)
+	zw.log.Debug().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
 }
 
 func copyFields(fields Fields) Fields {
