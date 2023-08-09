@@ -30,7 +30,7 @@ func extractZapOutput(value string) *os.File {
 		var err error
 		fl, err := os.OpenFile(value, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			defaultZap().WithError(err).Error("cant create log file, falling to stdout")
+			DefaultZap().WithError(err).Error("cant create log file, falling to stdout")
 			return os.Stdout
 		} else {
 			return fl

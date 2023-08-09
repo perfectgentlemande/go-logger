@@ -26,7 +26,3 @@ const (
 	Logrus  LoggerName = "logrus"
 	Zerolog LoggerName = "zerolog"
 )
-
-func CreateLogger(config *Config) Logger {
-	return newZap(config)
-}
