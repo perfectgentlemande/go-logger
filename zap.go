@@ -48,11 +48,13 @@ func DefaultZap() Logger {
 
 func NewZap(config *Config) Logger {
 	var encoder zapcore.Encoder
+	encoderConf := zap.NewProductionEncoderConfig()
+	encoderConf.TimeKey = fieldTime
 
 	if config.Formatter == FormatterJSON {
-		encoder = zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+		encoder = zapcore.NewJSONEncoder(encoderConf)
 	} else {
-		encoder = zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
+		encoder = zapcore.NewConsoleEncoder(encoderConf)
 	}
 
 	log := zap.New(
