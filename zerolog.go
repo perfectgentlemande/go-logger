@@ -63,7 +63,7 @@ func NewZerolog(config *Config) Logger {
 }
 
 func (zw *zerologWrapper) Panic(msg string) {
-	zw.log.Panic().Fields(zw.fields).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Panic().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Fatal(msg string) {
 	zw.log.Fatal().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
