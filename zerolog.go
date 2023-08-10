@@ -9,8 +9,7 @@ import (
 )
 
 type zerologWrapper struct {
-	log    *zerolog.Logger
-	fields Fields
+	log *zerolog.Logger
 }
 
 var levelZerolog = map[Level]zerolog.Level{
@@ -63,52 +62,33 @@ func NewZerolog(config *Config) Logger {
 }
 
 func (zw *zerologWrapper) Panic(msg string) {
-	zw.log.Panic().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Panic().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Fatal(msg string) {
-	zw.log.Fatal().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Fatal().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Error(msg string) {
-	zw.log.Error().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Error().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Warning(msg string) {
-	zw.log.Warn().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Warn().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Info(msg string) {
-	zw.log.Info().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
+	zw.log.Info().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) Debug(msg string) {
-	zw.log.Debug().Fields(map[string]interface{}(zw.fields)).Time(fieldTime, time.Now()).Msg(msg)
-}
-
-func copyFields(fields Fields) Fields {
-	res := make(Fields, len(fields))
-
-	for k := range fields {
-		res[k] = fields[k]
-	}
-
-	return res
+	zw.log.Debug().Time(fieldTime, time.Now()).Msg(msg)
 }
 func (zw *zerologWrapper) WithField(key string, value interface{}) Logger {
-	newFields := copyFields(zw.fields)
-	newFields[key] = value
-
+	log := zw.log.With().Fields(map[string]interface{}{key: value}).Logger()
 	return &zerologWrapper{
-		log:    zw.log,
-		fields: newFields,
+		log: &log,
 	}
 }
 func (zw *zerologWrapper) WithFields(fields Fields) Logger {
-	newFields := copyFields(zw.fields)
-
-	for k := range fields {
-		newFields[k] = fields[k]
-	}
-
+	log := zw.log.With().Fields(map[string]interface{}(fields)).Logger()
 	return &zerologWrapper{
-		log:    zw.log,
-		fields: newFields,
+		log: &log,
 	}
 }
 func (zw *zerologWrapper) WithError(err error) Logger {
