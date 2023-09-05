@@ -11,6 +11,12 @@ type Config struct {
 	Level     Level     `yaml:"level" json:"level"`         // enum (panic|fatal|error|warning|info|debug|trace)
 	Formatter Formatter `yaml:"formatter" json:"formatter"` // enum (json|text)
 	Output    string    `yaml:"output" json:"output"`       // enum (stdout|stderr|path/to/file)
+	Hooks     Hooks     `yaml:"hooks" json:"hooks"`
+}
+
+// Hooks is a set of hooks for logger
+type Hooks struct {
+	Sentry *Sentry `yaml:"sentry" json:"sentry"`
 }
 
 type Level uint32

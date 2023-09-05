@@ -19,6 +19,17 @@ var levelLogrus = map[Level]logrus.Level{
 	DebugLevel: logrus.DebugLevel,
 }
 
+// logrusLevelMap
+var logrusLevelMap = map[Level]logrus.Level{
+	emptyLevel: logrus.TraceLevel,
+	PanicLevel: logrus.PanicLevel,
+	FatalLevel: logrus.FatalLevel,
+	ErrorLevel: logrus.ErrorLevel,
+	WarnLevel:  logrus.WarnLevel,
+	InfoLevel:  logrus.InfoLevel,
+	DebugLevel: logrus.DebugLevel,
+}
+
 func DefaultLogrus() Logger {
 	log := logrus.New()
 	log.SetOutput(os.Stdout)
@@ -58,6 +69,7 @@ func NewLogrus(config *Config) Logger {
 		log.SetFormatter(&logrus.TextFormatter{})
 	}
 	log.SetLevel(levelLogrus[config.Level])
+	addHooks(log, config)
 
 	return &logrusWrapper{
 		log: logrus.NewEntry(log),
