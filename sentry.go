@@ -75,5 +75,7 @@ func addHooks(logger *logrus.Logger, config *Config) {
 		} else {
 			logger.WithError(err).Debug("can't add hook sentry")
 		}
+
+		logger.Info("added hook")
 	}
 }
