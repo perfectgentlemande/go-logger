@@ -3,15 +3,25 @@ package logger
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
+
+type Sentry struct {
+	DSN                           string            `yaml:"dsn" json:"dsn"`
+	Level                         Level             `yaml:"level" json:"level"`
+	Tags                          map[string]string `yaml:"tags" json:"tags"`
+	Timeout                       time.Duration     `yaml:"timeout" json:"timeout"`
+	StacktraceConfigurationEnable bool              `yaml:"stacktrace_enable" json:"stacktrace_enable"`
+	SSLSkipVerify                 bool              `yaml:"ssl_skip_verify" json:"ssl_skip_verify"`
+}
 
 type Config struct {
 	Level     Level     `yaml:"level" json:"level"`         // enum (panic|fatal|error|warning|info|debug|trace)
 	Formatter Formatter `yaml:"formatter" json:"formatter"` // enum (json|text)
 	Output    string    `yaml:"output" json:"output"`       // enum (stdout|stderr|path/to/file)
-	Hooks     Hooks     `yaml:"hooks" json:"hooks"`
+	Sentry    *Sentry   `yaml:"sentry" json:"sentry"`
 }
 
 // Hooks is a set of hooks for logger

@@ -1,8 +1,13 @@
 package logger
 
 import (
+	"crypto/tls"
+	"net/http"
 	"os"
+	"time"
 
+	"github.com/getsentry/sentry-go"
+	"github.com/makasim/sentryhook"
 	"github.com/sirupsen/logrus"
 )
 
@@ -59,6 +64,56 @@ func extractLogrusOutput(value string) *os.File {
 	}
 }
 
+func sentryLogrusHook(config *Sentry) (*sentryhook.Hook, error) {
+	tr := sentry.NewHTTPTransport()
+	if config.Timeout == 0 {
+		tr.Timeout = 2 * time.Second
+	} else {
+		tr.Timeout = config.Timeout
+	}
+
+	opts := sentry.ClientOptions{
+		Dsn:              config.DSN,
+		Transport:        tr,
+		AttachStacktrace: config.StacktraceConfigurationEnable,
+	}
+
+	if config.SSLSkipVerify {
+		opts.HTTPTransport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+	}
+
+	if len(config.Tags) != 0 {
+		sentry.ConfigureScope(func(scope *sentry.Scope) {
+			scope.SetTags(config.Tags)
+		})
+	}
+
+	if err := sentry.Init(opts); err != nil {
+		return nil, err
+	}
+
+	hook := sentryhook.New(
+		logLevels(config),
+	)
+
+	return &hook, nil
+}
+
+func addSentryLogrusHook(logger *logrus.Logger, config *Config) {
+	if config.Sentry != nil {
+		sh, err := sentryLogrusHook(config.Sentry)
+		if err == nil {
+			logger.AddHook(sh)
+		} else {
+			logger.WithError(err).Debug("can't add hook sentry")
+		}
+	}
+}
+
 func NewLogrus(config *Config) Logger {
 	log := logrus.New()
 	log.SetOutput(extractLogrusOutput(config.Output))
@@ -69,7 +124,7 @@ func NewLogrus(config *Config) Logger {
 		log.SetFormatter(&logrus.TextFormatter{})
 	}
 	log.SetLevel(levelLogrus[config.Level])
-	addHooks(log, config)
+	addSentryLogrusHook(log, config)
 
 	return &logrusWrapper{
 		log: logrus.NewEntry(log),
