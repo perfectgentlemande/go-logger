@@ -24,11 +24,6 @@ type Config struct {
 	Sentry    *Sentry   `yaml:"sentry" json:"sentry"`
 }
 
-// Hooks is a set of hooks for logger
-type Hooks struct {
-	Sentry *Sentry `yaml:"sentry" json:"sentry"`
-}
-
 type Level uint32
 
 const (
@@ -39,7 +34,6 @@ const (
 	WarnLevel        // warning
 	InfoLevel        // info
 	DebugLevel       // debug
-	// TraceLevel       // trace
 )
 
 var levelNumber = map[string]Level{
@@ -49,7 +43,6 @@ var levelNumber = map[string]Level{
 	"warning": WarnLevel,
 	"info":    InfoLevel,
 	"debug":   DebugLevel,
-	// "trace":   TraceLevel,
 }
 
 func (level *Level) UnmarshalJSON(value []byte) error {

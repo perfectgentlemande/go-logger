@@ -17,8 +17,8 @@ type Fields map[string]interface{}
 type LoggerName string
 
 const (
-	fieldError = "error"
-	fieldTime  = "time"
+	FieldError = "error"
+	FieldTime  = "time"
 
 	OutputStdOut = "stdout"
 	OutputStdErr = "stderr"
