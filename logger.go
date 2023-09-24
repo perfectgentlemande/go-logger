@@ -22,8 +22,4 @@ const (
 
 	OutputStdOut = "stdout"
 	OutputStdErr = "stderr"
-
-	Zap     LoggerName = "zap"
-	Logrus  LoggerName = "logrus"
-	Zerolog LoggerName = "zerolog"
 )
